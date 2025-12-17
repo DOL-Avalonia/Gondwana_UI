@@ -12,7 +12,7 @@ public:
 	// TODO(dstaniak) : Initialize output streams.
 
 	template<typename... Args>
-	void Write(char const* format, Args&&... args)
+	void Write(char const* format, Args &&... args)
 	{
 		if constexpr (sizeof...(args) > 0)
 			std::cout << std::format(format, std::forward<Args>(args)...) << std::endl;

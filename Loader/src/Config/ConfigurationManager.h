@@ -39,7 +39,7 @@ private:
 	std::filesystem::path m_ExeDirectory      { "" };
 	std::string           m_DaocGameExe       { "game.dll" };
 	std::filesystem::path m_DaocPath          { "." };
-	std::filesystem::path m_DaocGamePath      { "" };
+	std::filesystem::path m_DaocGameExePath      { "" };
 	Core::EncryptionLevel m_InitialEncryption { Core::EncryptionLevel::NoEncryption };
 	Core::EncryptionLevel m_GameEncryption    { Core::EncryptionLevel::NoEncryption };
 

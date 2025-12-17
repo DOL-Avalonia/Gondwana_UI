@@ -8,6 +8,8 @@ int main(int argc, char* argv[])
 	using namespace Gondwana::Loader;
 	using Logger::log;
 
+	log.Write("*** Gondwana Loader * 2025 (C) IDClick ***");
+
 	ConfigurationManager config({ argv, argv + argc });
 
 	return 0;

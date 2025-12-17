@@ -1,4 +1,5 @@
 #include "ConfigurationManager.h"
+#include "Log.h"
 
 namespace Gondwana::Loader {
 
@@ -8,7 +9,9 @@ ConfigurationManager::ConfigurationManager(std::vector<std::string_view> args)
 	m_ExeDirectory = m_ExePath.parent_path();
 
 	m_DaocPath = GetStrArg(args, ArgIndex::DaocPath, m_DaocPath.string());
-	m_DaocGamePath = m_DaocPath.append(m_DaocGameExe);
+	m_DaocGameExePath = m_DaocPath.append(m_DaocGameExe);
+
+	using Logger::log;
 }
 
 std::filesystem::path ConfigurationManager::GetExeDirectory() const
@@ -23,7 +26,7 @@ std::filesystem::path ConfigurationManager::GetDaocPath() const
 
 std::filesystem::path ConfigurationManager::GetDaocGameExePath() const
 {
-	return m_DaocGamePath;
+	return m_DaocGameExePath;
 }
 
 Core::EncryptionLevel ConfigurationManager::GetInitialEncryption() const
