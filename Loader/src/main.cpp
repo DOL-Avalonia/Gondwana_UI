@@ -21,13 +21,13 @@ int main(int argc, char* argv[])
 	//ConfigurationManager config({ argv, argv + argc });
 
 	const std::wstring daocPath = L"I:\\src\\upwork\\IDClick\\DAoC";
-	std::wstring daocGameDll = daocPath + L"\\game.dll";
+	std::wstring daocGameDll = daocPath + L"\\game.exe";
 	unsigned short port = 10300;
 	std::wstring address = L"127.0.0.1";
 	int worldId = 1;
 	std::wstring userName = L"daroking";
 	std::wstring password = L"passpass";
-	std::wstring commandLine = 
+	std::wstring commandLine = L".\\game.dll " +
 		address + L" " + std::to_wstring(port) + L" " + std::to_wstring(worldId) + L" " + userName + L" " + password;
 
 	log.Write("Starting process : {}", daocGameDll);

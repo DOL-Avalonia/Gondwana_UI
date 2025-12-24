@@ -10,8 +10,8 @@ Process::Process(
 	std::wstring_view executable, 
 	std::wstring_view commandLine, 
 	std::wstring_view workingDirectory,
-	bool attached,
-	bool suspended) :
+	bool suspended,
+	bool attached) :
 	m_Executable {executable},
 	m_CommandLine {commandLine},
 	m_WorkingDirectory {workingDirectory},
