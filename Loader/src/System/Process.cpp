@@ -1,8 +1,9 @@
 #include "Process.h"
+#include "Log.h"
 
 #include <windows.h>
 
-namespace Gondwana::Loader 
+namespace Gondwana::Loader::System
 {
 
 Process::Process(
@@ -92,6 +93,68 @@ void Process::Stop()
 	ResetProcessInformation();
 }
 
+bool Process::Join(unsigned int timeoutMs)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return false;
+
+	const DWORD waitResult = WaitForSingleObject(m_ProcessInformation.hProcess, timeoutMs);
+
+	bool result = false;
+	switch (waitResult)
+	{
+		case WAIT_OBJECT_0 : result = true ; break;
+		case WAIT_ABANDONED: result = false; break;
+		case WAIT_TIMEOUT  : result = false; break;
+		case WAIT_FAILED   : result = false; break;
+	}
+
+	return result;
+}
+
+bool Process::WriteBytes(void* address, void* bytes, size_t size)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return false;
+
+	DWORD wrote_bytes = 0;
+
+	DWORD oldProtect;
+	BOOL protectFix = VirtualProtectEx(
+		m_ProcessInformation.hProcess,
+		address,
+		size,
+		PAGE_READWRITE,
+		&oldProtect
+	);
+
+	if (protectFix == FALSE)
+		return false;
+
+	BOOL write_result = WriteProcessMemory(
+		m_ProcessInformation.hProcess,
+		address,
+		bytes,
+		size,
+		&wrote_bytes);
+
+	bool result = write_result != FALSE;
+
+	DWORD pageRWflags;
+	BOOL restoreProtection = VirtualProtectEx(
+		m_ProcessInformation.hProcess,
+		address,
+		size,
+		oldProtect,
+		&pageRWflags
+	);
+
+	if (restoreProtection == FALSE)
+		Logger::log.Write("[WARN] Cannot restore protection for {:8X} ({} bytes).", (unsigned int)address, size);
+
+	return result;
+}
+
 void Process::ResetProcessInformation()
 {
 	m_ProcessInformation.dwProcessId = 0;
@@ -101,5 +164,4 @@ void Process::ResetProcessInformation()
 }
 
 }
-
 

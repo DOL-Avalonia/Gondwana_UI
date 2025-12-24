@@ -131,13 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Process.cpp" />
+    <ClCompile Include="src\System\Process.cpp" />
     <ClCompile Include="src\Config\ConfigurationManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Cracking\Opcodes.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Process.h" />
+    <ClInclude Include="src\System\Process.h" />
     <ClInclude Include="src\Config\ConfigurationManager.h" />
     <ClInclude Include="src\Cracking\MemoryMap_1.127.h" />
     <ClInclude Include="src\Cracking\Opcodes.h" />

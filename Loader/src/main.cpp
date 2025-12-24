@@ -1,7 +1,12 @@
 #include "Log.h"
 #include "Config/ConfigurationManager.h"
+#include "System/Process.h"
+#include "Cracking/MemoryMap_1.127.h"
+#include "GameConsts.h"
 
 #include <string>
+#include <chrono>
+#include <thread>
 #include <windows.h>
 
 int main(int argc, char* argv[])
@@ -22,9 +27,35 @@ int main(int argc, char* argv[])
 	int worldId = 1;
 	std::wstring userName = L"daroking";
 	std::wstring password = L"passpass";
+	std::wstring commandLine = 
+		address + L" " + std::to_wstring(port) + L" " + std::to_wstring(worldId) + L" " + userName + L" " + password;
 
 	log.Write("Starting process : {}", daocGameDll);
+	log.Write("Command line arguments : {}", commandLine);
 
+	System::Process process{ daocGameDll, commandLine, daocPath, true, false };
+	process.Create();
+
+	log.Write("Injecting patches ...");
+
+	constexpr auto EncryptionLevel = Core::EncryptionLevel::NoEncryption;
+
+	if (!process.WriteBytes(MemoryMap_1_127::InitialEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
+	{
+		log.Write("Patching encryption level failed.");
+		return -1;
+	}
+
+	if (!process.WriteBytes(MemoryMap_1_127::GameEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
+	{
+		log.Write("Patching encryption level failed.");
+		return -1;
+	}
+
+	log.Write("Resuming the process' main thread.");
+	process.Start();
+	log.Write("Waiting for the process to exit ...");
+	process.Join();
 	
 	return 0;
 }

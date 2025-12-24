@@ -24,7 +24,7 @@
     <ClCompile Include="src\Config\ConfigurationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Process.cpp">
+    <ClCompile Include="src\System\Process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="src\Cracking\MemoryMap_1.127.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Process.h">
+    <ClInclude Include="src\System\Process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

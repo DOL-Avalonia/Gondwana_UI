@@ -3,7 +3,7 @@
 
 namespace Gondwana::Core {
 
-enum class EncryptionLevel
+enum class EncryptionLevel : unsigned int
 {
 	NoEncryption = 1,
 	Initial,

@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <string>
 
-namespace Gondwana::Loader 
+namespace Gondwana::Loader::System
 {
 
 class Process
@@ -23,6 +23,8 @@ public:
 	bool Create();
 	bool Start();
 	void Stop();
+	bool Join(unsigned int timeoutMs = INFINITE);
+	bool WriteBytes(void * address, void * bytes, size_t size);
 
 private:
 	void ResetProcessInformation();
