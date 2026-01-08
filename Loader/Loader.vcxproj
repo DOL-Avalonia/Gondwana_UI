@@ -131,12 +131,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Cracking\PatchNewClasses.cpp" />
     <ClCompile Include="src\System\Process.cpp" />
     <ClCompile Include="src\Config\ConfigurationManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Cracking\Opcodes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Cracking\MemoryMap.h" />
+    <ClInclude Include="src\Cracking\PatchNewClasses.h" />
     <ClInclude Include="src\System\Process.h" />
     <ClInclude Include="src\Config\ConfigurationManager.h" />
     <ClInclude Include="src\Cracking\MemoryMap_1.127.h" />
