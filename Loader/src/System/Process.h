@@ -24,7 +24,11 @@ public:
 	bool Start();
 	void Stop();
 	bool Join(unsigned int timeoutMs = INFINITE);
+	bool ReadBytes(void * address, void * bytes, size_t size);
 	bool WriteBytes(void * address, void * bytes, size_t size);
+	bool ReadBytesFromRPage(void * address, void * bytes, size_t size);
+	bool WriteBytesToRWPage(void * address, void const * bytes, size_t size);
+	HANDLE InjectDll(std::wstring_view dllPath);
 
 private:
 	void ResetProcessInformation();

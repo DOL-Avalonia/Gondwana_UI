@@ -112,6 +112,43 @@ bool Process::Join(unsigned int timeoutMs)
 	return result;
 }
 
+bool Process::ReadBytes(void* address, void* bytes, size_t size)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return false;
+
+	DWORD wrote_bytes = 0;
+
+	// TODO(dstaniak) : Make a page access modifier class for this :
+	DWORD oldProtect;
+	BOOL protectFix = VirtualProtectEx(
+		m_ProcessInformation.hProcess,
+		address,
+		size,
+		PAGE_READWRITE,
+		&oldProtect
+	);
+
+	if (protectFix == FALSE)
+		return false;
+
+	bool result = ReadBytesFromRPage(address, bytes, size);
+
+	DWORD pageRWflags;
+	BOOL restoreProtection = VirtualProtectEx(
+		m_ProcessInformation.hProcess,
+		address,
+		size,
+		oldProtect,
+		&pageRWflags
+	);
+
+	if (restoreProtection == FALSE)
+		Logger::log.Write("[WARN] Cannot restore protection for {:8X} ({} bytes).", (unsigned int)address, size);
+
+	return result;
+}
+
 bool Process::WriteBytes(void* address, void* bytes, size_t size)
 {
 	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
@@ -131,14 +168,7 @@ bool Process::WriteBytes(void* address, void* bytes, size_t size)
 	if (protectFix == FALSE)
 		return false;
 
-	BOOL write_result = WriteProcessMemory(
-		m_ProcessInformation.hProcess,
-		address,
-		bytes,
-		size,
-		&wrote_bytes);
-
-	bool result = write_result != FALSE;
+	bool result = WriteBytesToRWPage(address, bytes, size);
 
 	DWORD pageRWflags;
 	BOOL restoreProtection = VirtualProtectEx(
@@ -153,6 +183,77 @@ bool Process::WriteBytes(void* address, void* bytes, size_t size)
 		Logger::log.Write("[WARN] Cannot restore protection for {:8X} ({} bytes).", (unsigned int)address, size);
 
 	return result;
+}
+
+bool Process::ReadBytesFromRPage(void * address, void * bytes, size_t size)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return false;
+
+	DWORD readBytes;
+	BOOL readResult = ReadProcessMemory(
+		m_ProcessInformation.hProcess,
+		address,
+		bytes,
+		size,
+		&readBytes);
+
+	return (readResult != FALSE) && (readBytes == size);
+}
+
+bool Process::WriteBytesToRWPage(void * address, void const * bytes, size_t size)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return false;
+
+	DWORD wroteBytes;
+	BOOL writeResult = WriteProcessMemory(
+		m_ProcessInformation.hProcess,
+		address,
+		bytes,
+		size,
+		&wroteBytes);
+
+	return (writeResult != FALSE) && (wroteBytes == size);
+}
+
+HANDLE Process::InjectDll(std::wstring_view dllPath)
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE || dllPath.size() == 0)
+		return INVALID_HANDLE_VALUE;
+
+	const auto CharSize = sizeof(wchar_t);
+	const std::uintptr_t BytesSize = CharSize * dllPath.size();
+
+	void * inProcessMemory = VirtualAllocEx(
+		m_ProcessInformation.hProcess, 
+		NULL, 
+		BytesSize + CharSize,
+		MEM_COMMIT, 
+		PAGE_READWRITE
+	);
+
+	if (inProcessMemory == nullptr)
+		return INVALID_HANDLE_VALUE;
+
+	if (!WriteBytesToRWPage(inProcessMemory, dllPath.data(), BytesSize))
+		return INVALID_HANDLE_VALUE;
+
+	const wchar_t NullTerminator = 0;
+	void * trailingZeroAddress = reinterpret_cast<void *>(reinterpret_cast<std::uintptr_t>(inProcessMemory) + BytesSize);
+	if (!WriteBytesToRWPage(trailingZeroAddress, &NullTerminator, CharSize))
+		return INVALID_HANDLE_VALUE;
+
+	HMODULE kernel32 = GetModuleHandleA("kernel32.dll");
+	FARPROC loadLibraryA = GetProcAddress(static_cast<HINSTANCE>(kernel32), "LoadLibraryA");
+
+	// TODO(dstaniak) : Continue here!
+
+	/*HMODULE injectedDll = static_cast<HMODULE>(
+		RemoteCodeExecute()
+	);*/
+
+	return INVALID_HANDLE_VALUE;
 }
 
 void Process::ResetProcessInformation()

@@ -1,7 +1,7 @@
 #include "Log.h"
 #include "Config/ConfigurationManager.h"
 #include "System/Process.h"
-#include "Cracking/MemoryMap_1.127.h"
+#include "Cracking/MemoryMap.h"
 #include "GameConsts.h"
 
 #include <string>
@@ -40,13 +40,13 @@ int main(int argc, char* argv[])
 
 	constexpr auto EncryptionLevel = Core::EncryptionLevel::NoEncryption;
 
-	if (!process.WriteBytes(MemoryMap_1_127::InitialEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
+	if (!process.WriteBytes(MemoryMap::InitialEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
 	{
 		log.Write("Patching encryption level failed.");
 		return -1;
 	}
 
-	if (!process.WriteBytes(MemoryMap_1_127::GameEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
+	if (!process.WriteBytes(MemoryMap::GameEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
 	{
 		log.Write("Patching encryption level failed.");
 		return -1;

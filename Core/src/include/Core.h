@@ -4,6 +4,7 @@
 // that uses this DLL. This way any other project whose source files include this file see
 // CORE_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
+
 #ifdef CORE_EXPORTS
 #define CORE_API __declspec(dllexport)
 #else
@@ -19,4 +20,5 @@ public:
 
 extern CORE_API int nCore;
 
-CORE_API int fnCore(void);
+CORE_API unsigned short WriteReceviedPacket(unsigned short ntohsArgument);
+
