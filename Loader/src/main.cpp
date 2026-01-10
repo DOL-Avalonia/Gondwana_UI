@@ -2,6 +2,7 @@
 #include "Config/ConfigurationManager.h"
 #include "System/Process.h"
 #include "Cracking/MemoryMap.h"
+#include "Cracking/PatchNewClasses.h"
 #include "GameConsts.h"
 
 #include <string>
@@ -52,6 +53,14 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	PatchNewClasses patchNewClasses;
+
+	if (!patchNewClasses.Apply(process))
+	{
+		log.Write("Patching new classes failed.");
+		return -1;
+	}
+	
 	log.Write("Resuming the process' main thread.");
 	process.Start();
 	log.Write("Waiting for the process to exit ...");

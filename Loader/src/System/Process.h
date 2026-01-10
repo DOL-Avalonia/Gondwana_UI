@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <string>
+#include <optional>
 
 namespace Gondwana::Loader::System
 {
@@ -10,6 +11,13 @@ namespace Gondwana::Loader::System
 class Process
 {
 public:
+	struct Thread
+	{
+		HANDLE handle {NULL};
+		DWORD  id     {0};
+		DWORD  result {0};
+	};
+
 	Process(
 		std::wstring_view executable,
 		std::wstring_view commandLine,
@@ -18,16 +26,44 @@ public:
 		bool attached
 	);
 
+	class TmpMemory
+	{
+	public:
+		TmpMemory(TmpMemory && other);
+		~TmpMemory();
+		void * Address();
+		operator void *();
+		operator uintptr_t ();
+
+	private:
+		friend class Process;
+
+		TmpMemory(Process const & process, size_t size);
+
+		Process const & m_Process;
+		void * m_Address;
+	};
+
 	~Process();
 
 	bool Create();
 	bool Start();
 	void Stop();
 	bool Join(unsigned int timeoutMs = INFINITE);
+
 	bool ReadBytes(void * address, void * bytes, size_t size);
 	bool WriteBytes(void * address, void * bytes, size_t size);
 	bool ReadBytesFromRPage(void * address, void * bytes, size_t size);
 	bool WriteBytesToRWPage(void * address, void const * bytes, size_t size);
+
+	void * Alloc(size_t size) const;
+	void Free(void * address) const;
+	TmpMemory AllocTmp(size_t size) const;
+
+	Thread StartThread(LPTHREAD_START_ROUTINE function, void * argument) const;
+	void JoinThread(Thread & thread) const;
+	std::pair<bool, DWORD> SyncThread(LPTHREAD_START_ROUTINE function, void * argument) const;
+
 	HANDLE InjectDll(std::wstring_view dllPath);
 
 private:

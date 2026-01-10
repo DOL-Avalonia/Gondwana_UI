@@ -1,6 +1,9 @@
 #ifndef GONDWANA_LOADER_PATCHNEWCLASS_H
 #define GONDWANA_LOADER_PATCHNEWCLASS_H
 
+#include <string>
+#include <vector>
+
 namespace Gondwana::Loader
 {
 
@@ -21,6 +24,10 @@ private:
 	bool Write(System::Process & process, void * newDataPtr);
 
 	void * m_OldAddress = nullptr;
+	void * m_NewClasses = nullptr;
+
+	static const std::vector<std::string> Classes;
+	static constexpr size_t ClassStrLen = 30;
 };
 
 } // Gondwana::Loader

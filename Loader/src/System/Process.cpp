@@ -6,6 +6,38 @@
 namespace Gondwana::Loader::System
 {
 
+Process::TmpMemory::TmpMemory(TmpMemory && other) :
+	m_Process{other.m_Process},
+	m_Address{other.m_Address}
+{
+	other.m_Address = nullptr;
+}
+
+Process::TmpMemory::TmpMemory(Process const & process, size_t size) :
+	m_Process{process},
+	m_Address{process.Alloc(size)}
+{}
+
+Process::TmpMemory::~TmpMemory()
+{
+	m_Process.Free(m_Address);
+}
+
+void* Process::TmpMemory::Address()
+{
+	return m_Address;
+}
+
+Process::TmpMemory::operator void* ()
+{
+	return m_Address;
+}
+
+Process::TmpMemory::operator uintptr_t()
+{
+	return reinterpret_cast<uintptr_t>(m_Address);
+}
+
 Process::Process(
 	std::wstring_view executable, 
 	std::wstring_view commandLine, 
@@ -217,43 +249,98 @@ bool Process::WriteBytesToRWPage(void * address, void const * bytes, size_t size
 	return (writeResult != FALSE) && (wroteBytes == size);
 }
 
+void * Process::Alloc(size_t size) const
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return nullptr;
+
+	return VirtualAllocEx(m_ProcessInformation.hProcess, NULL, size, MEM_COMMIT, PAGE_READWRITE);
+}
+
+void Process::Free(void * address) const
+{
+	if (address == nullptr)
+		return;
+
+	VirtualFreeEx(m_ProcessInformation.hProcess, address, 0, MEM_RELEASE);
+}
+
+Process::TmpMemory Process::AllocTmp(size_t size) const
+{
+	return TmpMemory{ *this, size };
+}
+
+Process::Thread Process::StartThread(LPTHREAD_START_ROUTINE function, void* argument) const
+{
+	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+		return Thread{};
+
+	Thread result{};
+	result.handle = CreateRemoteThread(
+		m_ProcessInformation.hProcess,
+		NULL,
+		0,
+		reinterpret_cast<LPTHREAD_START_ROUTINE>(function), 
+		argument, 
+		0,
+	    &result.id	
+	);
+
+	return result;
+}
+
+void Process::JoinThread(Thread & thread) const
+{
+	if (thread.handle == NULL)
+		return;
+	WaitForSingleObject(thread.handle, INFINITE);
+	GetExitCodeThread(thread.handle, &thread.result);
+	CloseHandle(thread.handle);
+	thread.handle = NULL;
+	thread.id = 0;
+}
+
+std::pair<bool, DWORD> Process::SyncThread(LPTHREAD_START_ROUTINE function, void * argument) const
+{
+	auto thread = StartThread(function, argument);
+	if (thread.handle == NULL)
+		return { false, 0 };
+	JoinThread(thread);
+	return { true, thread.result };
+}
+
 HANDLE Process::InjectDll(std::wstring_view dllPath)
 {
 	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE || dllPath.size() == 0)
-		return INVALID_HANDLE_VALUE;
+		return NULL;
 
 	const auto CharSize = sizeof(wchar_t);
 	const std::uintptr_t BytesSize = CharSize * dllPath.size();
 
-	void * inProcessMemory = VirtualAllocEx(
-		m_ProcessInformation.hProcess, 
-		NULL, 
-		BytesSize + CharSize,
-		MEM_COMMIT, 
-		PAGE_READWRITE
-	);
+	auto inProcessMemory = AllocTmp(BytesSize + CharSize);
 
 	if (inProcessMemory == nullptr)
-		return INVALID_HANDLE_VALUE;
+		return NULL;
 
 	if (!WriteBytesToRWPage(inProcessMemory, dllPath.data(), BytesSize))
-		return INVALID_HANDLE_VALUE;
+		return NULL;
 
 	const wchar_t NullTerminator = 0;
-	void * trailingZeroAddress = reinterpret_cast<void *>(reinterpret_cast<std::uintptr_t>(inProcessMemory) + BytesSize);
+	void * trailingZeroAddress = reinterpret_cast<void *>(inProcessMemory + BytesSize);
 	if (!WriteBytesToRWPage(trailingZeroAddress, &NullTerminator, CharSize))
-		return INVALID_HANDLE_VALUE;
+		return NULL;
 
 	HMODULE kernel32 = GetModuleHandleA("kernel32.dll");
+	if (kernel32 == NULL)
+		return NULL;
+
 	FARPROC loadLibraryA = GetProcAddress(static_cast<HINSTANCE>(kernel32), "LoadLibraryA");
+	const auto [result, returnVal] = SyncThread(reinterpret_cast<LPTHREAD_START_ROUTINE>(loadLibraryA), inProcessMemory);
 
-	// TODO(dstaniak) : Continue here!
+	if (!result)
+		return NULL;
 
-	/*HMODULE injectedDll = static_cast<HMODULE>(
-		RemoteCodeExecute()
-	);*/
-
-	return INVALID_HANDLE_VALUE;
+	return reinterpret_cast<HANDLE>(returnVal);
 }
 
 void Process::ResetProcessInformation()
