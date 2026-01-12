@@ -125,11 +125,16 @@ bool PatchNewClasses::Apply(System::Process & process)
 		offset += ClassStrLen;
 	}
 
-	Logger::log.Write("NewClasses: new class strings copied into process memory.");
-
 	if (!process.WriteBytes(m_NewClasses, newClasses.get(), memSize))
 	{
-		Logger::log.Write("NewClasses: cannot patch code.");
+		Logger::log.Write("NewClasses: cannot write strings into process memory.");
+		return false;
+	}
+	Logger::log.Write("NewClasses: new class strings copied into process memory.");
+
+	if (!Write(process, m_NewClasses))
+	{
+		Logger::log.Write("NewClasses: patch applied.");
 		return false;
 	}
 
