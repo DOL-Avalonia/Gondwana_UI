@@ -8,8 +8,8 @@ namespace Gondwana::Core {
 
 struct SharedMemoryMap
 {
-	EncryptionLevel InitialEncryptionLevel       { EncryptionLevel::Initial };
-	EncryptionLevel GameEncryptionLevel          { EncryptionLevel::Full };
+	GameData::EncryptionLevel InitialEncryptionLevel       { GameData::EncryptionLevel::Initial };
+	GameData::EncryptionLevel GameEncryptionLevel          { GameData::EncryptionLevel::Full    };
 
 	Logger::Log *   Logger                       { nullptr };
 };

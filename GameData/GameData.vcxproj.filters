@@ -15,30 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\include\cpp.hint" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\include\framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\include\Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\include\pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\include\SharedMemoryMap.h">
+    <ClInclude Include="src\include\GameConsts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\source\Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\source\dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\source\pch.cpp">
+    <ClCompile Include="src\source\GameConsts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

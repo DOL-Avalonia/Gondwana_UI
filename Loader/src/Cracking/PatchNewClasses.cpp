@@ -2,93 +2,13 @@
 #include "MemoryMap.h"
 #include "../System/Process.h"
 #include "Log.h"
+#include "GameConsts.h"
 
 #include <array>
 #include <memory>
 
 namespace Gondwana::Loader 
 {
-
-const std::vector<std::string> PatchNewClasses::Classes = {
-	"",
-	"Acolyte6",
-	"AlbionRogue7",
-	"Disciple0",
-	"Elementalist5",
-	"Fighter4",
-	"Forester7",
-	"Guardian2",
-	"Mage8",
-	"Magician1",
-	"MidgardRogue8",
-	"Mystic6",
-	"Naturalist3",
-	"Seer7",
-	"Stalker4",
-	"Viking5",
-	"Armsman",
-	"Cabalist3",
-	"Cleric",
-	"Friar0",
-	"Heretic3",
-	"Infiltrator",
-	"Mercenary1",
-	"Minstrel",
-	"Necromancer2",
-	"Paladin",
-	"Reaver9",
-	"Scout",
-	"Sorcerer",
-	"Theurgist",
-	"Wizard",
-	"MaulerAlb0",
-	"Occultist5",
-	"DarkKnight4",
-	"RedMage3",
-	"ChaosMage6",
-	"Psion7",
-	"Berserker1",
-	"Bonedancer0",
-	"Healer6",
-	"Hunter5",
-	"Runemaster9",
-	"Savage2",
-	"Shadowblade3",
-	"Shaman8",
-	"Skald4",
-	"Spiritmaster7",
-	"Thane1",
-	"Valkyrie4",
-	"Warlock9",
-	"Warrior2",
-	"MaulerMid1",
-	"HelWarden8",
-	"Einherjar9",
-	"Geomancer0",
-	"Corsair1",
-	"Alchemist2",
-	"Animist5",
-	"Bainshee9",
-	"Bard8",
-	"Blademaster3",
-	"Champion5",
-	"Druid7",
-	"Eldritch0",
-	"Enchanter1",
-	"Hero4",
-	"Mentalist2",
-	"Nightshade9",
-	"Ranger0",
-	"Valewalker6",
-	"Vampiir8",
-	"Warden6",
-	"MaulerHib2",
-	"Reaper3",
-	"Dragoon4",
-	"BlueMage5",
-	"ElementalKnight6",
-	"PuppetMaster7"
-};
 
 bool PatchNewClasses::Apply(System::Process & process)
 {
@@ -107,8 +27,9 @@ bool PatchNewClasses::Apply(System::Process & process)
 	}
 
 	Logger::log.Write("NewClasses: old classes memory is {}.", m_OldAddress);
-
-	const size_t memSize = ClassStrLen * Classes.size();
+	
+	const auto classesCount = static_cast<int>(GameData::CharacterClassNames.rbegin()->first) + 1;
+	const size_t memSize = ClassStrLen * classesCount;
 	m_NewClasses = process.Alloc(memSize);
 	if (m_NewClasses == nullptr)
 	{
@@ -118,11 +39,10 @@ bool PatchNewClasses::Apply(System::Process & process)
 
 	std::unique_ptr<char[]> newClasses(new char[memSize]);
 	memset(newClasses.get(), 0, memSize);
-	size_t offset = 0;
-	for (const auto& classStr : Classes)
+	for (const auto& [charClass, className] : GameData::CharacterClassNames)
 	{
-		memcpy(newClasses.get() + offset, classStr.c_str(), classStr.size());
-		offset += ClassStrLen;
+	 	const auto offset = static_cast<size_t>(charClass) * ClassStrLen;
+		memcpy(newClasses.get() + offset, className.c_str(), className.size());
 	}
 
 	if (!process.WriteBytes(m_NewClasses, newClasses.get(), memSize))
@@ -132,7 +52,7 @@ bool PatchNewClasses::Apply(System::Process & process)
 	}
 	Logger::log.Write("NewClasses: new class strings copied into process memory.");
 
-	if (!Write(process, m_NewClasses))
+	if (!PatchAddress(process, m_NewClasses))
 	{
 		Logger::log.Write("NewClasses: patch applied.");
 		return false;
@@ -147,14 +67,14 @@ bool PatchNewClasses::Undo(System::Process & process)
 {
 	if (m_OldAddress == nullptr)
 		return false;
-	Write(process, m_OldAddress);
+	PatchAddress(process, m_OldAddress);
 	process.Free(m_NewClasses);
 	m_NewClasses = nullptr;
 	m_OldAddress = nullptr;
 	return true;
 }
 
-bool PatchNewClasses::Write(System::Process& process, void * newDataPtr)
+bool PatchNewClasses::PatchAddress(System::Process& process, void * newDataPtr)
 {
 	for (auto address : MemoryMap::Classes::ClassNamesRefs)
 	{

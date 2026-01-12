@@ -19,27 +19,28 @@ int main(int argc, char* argv[])
 
 	log.Write("*** Gondwana Loader * 2025 (C) IDClick ***");
 
-	//ConfigurationManager config({ argv, argv + argc });
+	ConfigurationManager config;
 
-	const std::wstring daocPath = L"I:\\src\\upwork\\IDClick\\DAoC";
-	std::wstring daocGameDll = daocPath + L"\\game.exe";
-	unsigned short port = 10300;
-	std::wstring address = L"127.0.0.1";
-	int worldId = 1;
-	std::wstring userName = L"daroking";
-	std::wstring password = L"passpass";
-	std::wstring commandLine = L".\\game.dll " +
-		address + L" " + std::to_wstring(port) + L" " + std::to_wstring(worldId) + L" " + userName + L" " + password;
+	log.Write("Starting process : {}", config.GetDaocGameExePath().wstring());
 
-	log.Write("Starting process : {}", daocGameDll);
-	log.Write("Command line arguments : {}", commandLine);
+	System::Process process
+	{ 
+		config.GetDaocGameExePath().wstring(), 
+		config.GetGameDllCommandLine(), 
+		config.GetDaocPath().wstring(), 
+		true, 
+		false
+	};
 
-	System::Process process{ daocGameDll, commandLine, daocPath, true, false };
-	process.Create();
+	if (!process.Create())
+	{
+		log.Write("Could not start process.");
+		return -1;
+	}
 
 	log.Write("Injecting patches ...");
 
-	constexpr auto EncryptionLevel = Core::EncryptionLevel::NoEncryption;
+	constexpr auto EncryptionLevel = GameData::EncryptionLevel::NoEncryption;
 
 	if (!process.WriteBytes(MemoryMap::InitialEncryptionLevel, (void*)&EncryptionLevel, sizeof(EncryptionLevel)))
 	{

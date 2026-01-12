@@ -21,12 +21,11 @@ public:
 	bool Undo(System::Process & process);
 
 private:
-	bool Write(System::Process & process, void * newDataPtr);
+	bool PatchAddress(System::Process & process, void * newDataPtr);
 
 	void * m_OldAddress = nullptr;
 	void * m_NewClasses = nullptr;
 
-	static const std::vector<std::string> Classes;
 	static constexpr size_t ClassStrLen = 30;
 };
 
