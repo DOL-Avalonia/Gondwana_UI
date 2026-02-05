@@ -16,6 +16,7 @@ public:
 	ConfigurationManager();
 
 	std::filesystem::path GetExeDirectory() const;
+	std::filesystem::path GetCoreDllPath() const;
 
 	std::filesystem::path GetDaocPath() const;
 	std::wstring GetDaocGameExe() const;
@@ -73,6 +74,7 @@ I:\src\upwork\IDClick\DAoC game.exe 127.0.0.1 10300 daroking passpass
 
 	std::filesystem::path m_ExePath               { "" };
 	std::filesystem::path m_ExeDirectory          { "" };
+	std::filesystem::path m_CoreDllPath           { "" };
 
 	std::filesystem::path m_DaocPath              { "." };
 	std::wstring          m_DaocGameExe           { L"game.dll" };

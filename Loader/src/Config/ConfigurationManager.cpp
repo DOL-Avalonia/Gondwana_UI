@@ -13,6 +13,8 @@ ConfigurationManager::ConfigurationManager()
 
 	m_ExePath = GetStrArg(args, ArgIndex::ExePath, m_ExePath.wstring());
 	m_ExeDirectory = m_ExePath.parent_path();
+	m_CoreDllPath = m_ExeDirectory;
+	m_CoreDllPath.append("Core.dll");
 
 	m_DaocPath = GetStrArg(args, ArgIndex::DaocPath, m_DaocPath.wstring());
 	m_DaocGameExe = GetStrArg(args, ArgIndex::DaocGameExe, m_DaocGameExe);
@@ -51,6 +53,11 @@ std::wstring ConfigurationManager::GetDaocGameExe() const
 std::filesystem::path ConfigurationManager::GetDaocGameExePath() const
 {
 	return m_DaocGameExePath;
+}
+
+std::filesystem::path ConfigurationManager::GetCoreDllPath() const
+{
+	return m_CoreDllPath;
 }
 
 std::wstring ConfigurationManager::GetServerAddress() const

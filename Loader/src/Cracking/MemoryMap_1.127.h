@@ -22,6 +22,8 @@ inline std::array<void *, 5> ClassNamesRefs =
 	(void*)0x04E04E9
 };
 
+inline void * CraftingInfo = (void *)0xF7F910;
+
 }
 
 } // Gondwana::Loader::MemoryMap_1_127

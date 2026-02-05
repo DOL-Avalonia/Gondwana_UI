@@ -334,8 +334,8 @@ HANDLE Process::InjectDll(std::wstring_view dllPath)
 	if (kernel32 == NULL)
 		return NULL;
 
-	FARPROC loadLibraryA = GetProcAddress(static_cast<HINSTANCE>(kernel32), "LoadLibraryA");
-	const auto [result, returnVal] = SyncThread(reinterpret_cast<LPTHREAD_START_ROUTINE>(loadLibraryA), inProcessMemory);
+	FARPROC loadLibrary = GetProcAddress(static_cast<HINSTANCE>(kernel32), "LoadLibraryW");
+	const auto [result, returnVal] = SyncThread(reinterpret_cast<LPTHREAD_START_ROUTINE>(loadLibrary), inProcessMemory);
 
 	if (!result)
 		return NULL;

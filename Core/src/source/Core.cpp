@@ -20,3 +20,4 @@ CCore::CCore()
 {
     return;
 }
+

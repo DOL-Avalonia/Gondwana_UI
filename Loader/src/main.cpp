@@ -38,6 +38,14 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	log.Write("Injecting Gondwana Core : {}", config.GetCoreDllPath().wstring());
+	auto coreDllHandle = process.InjectDll(config.GetCoreDllPath().wstring());
+	if (!coreDllHandle)
+	{
+		log.Write("Injecting Gondwana code failed.");
+		return -1;
+	}
+
 	log.Write("Injecting patches ...");
 
 	constexpr auto EncryptionLevel = GameData::EncryptionLevel::NoEncryption;
