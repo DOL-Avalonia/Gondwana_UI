@@ -1,17 +1,13 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+#include "Core.h"
+#include <windows.h>
+#include <memory>
 
-#include "pch.h"
-#include <Windows.h>
-
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
+BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 {
-    switch (ul_reason_for_call)
+    switch (reason)
     {
-		case DLL_PROCESS_ATTACH:
-            MessageBoxA(nullptr, "Gondwana Code Injected!", "Gondwana Core", MB_OK | MB_ICONEXCLAMATION);
+		case DLL_PROCESS_ATTACH: 
+            Gondwana::Core::s_Core.reset(new Gondwana::Core::Core());
             break;
 
 		case DLL_THREAD_ATTACH:
@@ -21,6 +17,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             break;
 
 		case DLL_PROCESS_DETACH:
+            Gondwana::Core::s_Core.reset();
 			break;
     }
     return TRUE;

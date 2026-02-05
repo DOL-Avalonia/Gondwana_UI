@@ -1,9 +1,9 @@
-#include "Process.h"
+#include "Util/Process.h"
 #include "Log.h"
 
 #include <windows.h>
 
-namespace Gondwana::Loader::System
+namespace Gondwana::Util::System
 {
 
 Process::TmpMemory::TmpMemory(TmpMemory && other) :
@@ -87,7 +87,7 @@ Process::~Process()
 
 bool Process::Create()
 {
-	if (m_ProcessInformation.hProcess != INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess != 0)
 		return false;
 
 	DWORD creationFlags =
@@ -133,7 +133,7 @@ bool Process::Create()
 
 bool Process::Start()
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return false;
 
 	if (int result = ResumeThread(m_ProcessInformation.hThread); result == -1)
@@ -146,7 +146,7 @@ bool Process::Start()
 
 void Process::Stop()
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return;
 	TerminateProcess(m_ProcessInformation.hThread, 0);
 	ResetProcessInformation();
@@ -154,7 +154,7 @@ void Process::Stop()
 
 bool Process::Join(unsigned int timeoutMs)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return false;
 
 	const DWORD waitResult = WaitForSingleObject(m_ProcessInformation.hProcess, timeoutMs);
@@ -173,7 +173,7 @@ bool Process::Join(unsigned int timeoutMs)
 
 bool Process::ReadBytes(void* address, void* bytes, size_t size)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return false;
 
 	DWORD wrote_bytes = 0;
@@ -210,8 +210,11 @@ bool Process::ReadBytes(void* address, void* bytes, size_t size)
 
 bool Process::WriteBytes(void* address, void* bytes, size_t size)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
+	{
+		MessageBoxA(NULL, "Invalid handle", "", MB_OK);
 		return false;
+	}
 
 	DWORD wrote_bytes = 0;
 
@@ -225,7 +228,10 @@ bool Process::WriteBytes(void* address, void* bytes, size_t size)
 	);
 
 	if (protectFix == FALSE)
+	{
+		MessageBoxA(NULL, "Protect failed", "", MB_OK);
 		return false;
+	}
 
 	bool result = WriteBytesToRWPage(address, bytes, size);
 
@@ -246,7 +252,7 @@ bool Process::WriteBytes(void* address, void* bytes, size_t size)
 
 bool Process::ReadBytesFromRPage(void * address, void * bytes, size_t size)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return false;
 
 	DWORD readBytes;
@@ -262,7 +268,7 @@ bool Process::ReadBytesFromRPage(void * address, void * bytes, size_t size)
 
 bool Process::WriteBytesToRWPage(void * address, void const * bytes, size_t size)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return false;
 
 	DWORD wroteBytes;
@@ -278,7 +284,7 @@ bool Process::WriteBytesToRWPage(void * address, void const * bytes, size_t size
 
 void * Process::Alloc(size_t size) const
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return nullptr;
 
 	return VirtualAllocEx(m_ProcessInformation.hProcess, NULL, size, MEM_COMMIT, PAGE_READWRITE);
@@ -299,7 +305,7 @@ Process::TmpMemory Process::AllocTmp(size_t size) const
 
 Process::Thread Process::StartThread(LPTHREAD_START_ROUTINE function, void* argument) const
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE)
+	if (m_ProcessInformation.hProcess == 0)
 		return Thread{};
 
 	Thread result{};
@@ -338,7 +344,7 @@ std::pair<bool, DWORD> Process::SyncThread(LPTHREAD_START_ROUTINE function, void
 
 HANDLE Process::InjectDll(std::wstring_view dllPath)
 {
-	if (m_ProcessInformation.hProcess == INVALID_HANDLE_VALUE || dllPath.size() == 0)
+	if (m_ProcessInformation.hProcess == 0 || dllPath.size() == 0)
 		return NULL;
 
 	const auto CharSize = sizeof(wchar_t);
@@ -374,8 +380,8 @@ void Process::ResetProcessInformation()
 {
 	m_ProcessInformation.dwProcessId = 0;
 	m_ProcessInformation.dwThreadId = 0;
-	m_ProcessInformation.hProcess = INVALID_HANDLE_VALUE;
-	m_ProcessInformation.hThread = INVALID_HANDLE_VALUE;
+	m_ProcessInformation.hProcess = 0;
+	m_ProcessInformation.hThread = 0;
 }
 
 }

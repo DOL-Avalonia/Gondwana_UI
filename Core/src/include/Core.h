@@ -1,24 +1,32 @@
-// The following ifdef block is the standard way of creating macros which make exporting
-// from a DLL simpler. All files within this DLL are compiled with the CORE_EXPORTS
-// symbol defined on the command line. This symbol should not be defined on any project
-// that uses this DLL. This way any other project whose source files include this file see
-// CORE_API functions as being imported from a DLL, whereas this DLL sees symbols
-// defined with this macro as being exported.
+#ifndef GONDWANA_CORE_CORE_H
+#define GONDWANA_CORE_CORE_H
 
-#ifdef CORE_EXPORTS
-#define CORE_API __declspec(dllexport)
-#else
-#define CORE_API __declspec(dllimport)
-#endif
+#include "Util/Process.h"
+#include "Hooks.h"
+#include <memory>
 
-// This class is exported from the dll
-class CORE_API CCore {
+namespace Gondwana::Core
+{
+
+class Core
+{
+
 public:
-	CCore(void);
-	// TODO: add your methods here.
+	Core();
+	~Core();
+
+	void OnGameStarted();
+
+private:
+	std::unique_ptr<Util::System::Process> m_Process;
+
+	Hooks::Hook m_GameStartHook;
 };
 
-extern CORE_API int nCore;
+extern std::unique_ptr<Gondwana::Core::Core> s_Core;
 
-CORE_API unsigned short WriteReceviedPacket(unsigned short ntohsArgument);
+}
 
+///// Hooks
+
+#endif GONDWANA_CORE_CORE_H

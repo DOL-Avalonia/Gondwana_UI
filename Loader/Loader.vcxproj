@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SharedMemory.cpp" />
     <ClCompile Include="src\Cracking\PatchNewClasses.cpp" />
     <ClCompile Include="src\System\Process.cpp" />
     <ClCompile Include="src\Config\ConfigurationManager.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="src\Cracking\Opcodes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SharedMemory.h" />
     <ClInclude Include="src\Cracking\MemoryMap.h" />
     <ClInclude Include="src\Cracking\PatchNewClasses.h" />
     <ClInclude Include="src\System\Process.h" />

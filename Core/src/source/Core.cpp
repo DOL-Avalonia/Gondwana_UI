@@ -1,23 +1,32 @@
-// Core.cpp : Defines the exported functions for the DLL.
-//
-
-#include "pch.h"
-#include "framework.h"
 #include "Core.h"
+#include "Util/Process.h"
+#include "GameCalls.h"
 
-#include <winsock.h>
-
-// This is an example of an exported variable
-CORE_API int nCore=0;
-
-CORE_API unsigned short WriteReceviedPacket(unsigned short ntohsArgument)
+namespace Gondwana::Core
 {
-    return ntohs(ntohsArgument);
+
+std::unique_ptr<Gondwana::Core::Core> s_Core;
+
+Core::Core() :
+	m_GameStartHook{ &Hooks::GameStart, GameCalls::Call_GetGameTicks_GameStart, Hooks::Hook::Opcode::CALL }
+{
+	m_Process.reset(new Util::System::Process());
+
+	m_GameStartHook.Apply(*m_Process);
 }
 
-// This is the constructor of a class that has been exported.
-CCore::CCore()
+Core::~Core()
 {
-    return;
+	if (!m_Process)
+		return;
+
+	m_GameStartHook.Undo(*m_Process);
+}
+
+void Core::OnGameStarted()
+{
+	MessageBoxA(nullptr, "Game started.", "Gondwana", MB_OK | MB_ICONINFORMATION);
+}
+
 }
 

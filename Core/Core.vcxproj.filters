@@ -15,19 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\include\cpp.hint" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\include\framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\pch.h">
+    <ClInclude Include="src\include\SharedMemoryMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\SharedMemoryMap.h">
+    <ClInclude Include="src\include\Hooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\GameCalls_1.127.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\GameCalls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\Util\Process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +41,10 @@
     <ClCompile Include="src\source\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\source\pch.cpp">
+    <ClCompile Include="src\source\Hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\source\Util\Process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

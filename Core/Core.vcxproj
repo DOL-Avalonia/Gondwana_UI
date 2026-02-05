@@ -92,8 +92,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -155,23 +156,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="src\include\cpp.hint" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\include\Core.h" />
-    <ClInclude Include="src\include\framework.h" />
-    <ClInclude Include="src\include\pch.h" />
+    <ClInclude Include="src\include\GameCalls.h" />
+    <ClInclude Include="src\include\GameCalls_1.127.h" />
+    <ClInclude Include="src\include\Hooks.h" />
+    <ClInclude Include="src\include\Util\Process.h" />
     <ClInclude Include="src\include\SharedMemoryMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\source\Core.cpp" />
     <ClCompile Include="src\source\dllmain.cpp" />
-    <ClCompile Include="src\source\pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="src\source\Hooks.cpp" />
+    <ClCompile Include="src\source\Util\Process.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GameData\GameData.vcxproj">
