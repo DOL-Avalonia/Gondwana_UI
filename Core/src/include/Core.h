@@ -19,7 +19,6 @@ public:
 
 private:
 	std::unique_ptr<Util::System::Process> m_Process;
-
 	Hooks::Hook m_GameStartHook;
 };
 

@@ -9,17 +9,6 @@
 namespace Gondwana::Core::Hooks
 {
 
-long long int GameStart()
-{
-	s_Core->OnGameStarted();
-	return Gondwana::Core::GameCalls::GetGameTicks();
-}
-
-unsigned short WriteReceviedPacket(unsigned short i)
-{
-	return ntohs(i);
-}
-
 Hook::Hook(void * hookFunction, void * hookingAddress, Opcode opcode) :
 	m_HookingAddress {hookingAddress},
 	m_Opcode {opcode}
@@ -46,6 +35,17 @@ bool Hook::Undo(Util::System::Process& process)
 		return false; // Not applied.
 
 	return process.WriteBytes(m_HookingAddress, &m_PreviousAddress, sizeof(void *));
+}
+
+long long int GameStart()
+{
+	s_Core->OnGameStarted();
+	return Gondwana::Core::GameCalls::GetGameTicks();
+}
+
+unsigned short WriteReceviedPacket(unsigned short i)
+{
+	return ntohs(i);
 }
 
 }

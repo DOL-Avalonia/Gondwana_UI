@@ -7,6 +7,7 @@ namespace Gondwana::Core
 
 std::unique_ptr<Gondwana::Core::Core> s_Core;
 
+// TODO(dstaniak) : Take away hooks from here. Make hooks class which will do the hooking and unhooking and call the Core instance.
 Core::Core() :
 	m_GameStartHook{ &Hooks::GameStart, GameCalls::Call_GetGameTicks_GameStart, Hooks::Hook::Opcode::CALL }
 {
