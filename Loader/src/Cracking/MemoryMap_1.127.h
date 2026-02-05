@@ -32,9 +32,6 @@ inline std::array<void *, 5> ClassNamesRefs =
 	(void*)0x04E04E9
 };
 
-// Crafting table start. It has 20 (0x14) crafting entries, 408 bytes each.
-inline void * CraftingInfo = (void *)0xF7F910;
-
 }
 
 } // Gondwana::Loader::MemoryMap_1_127

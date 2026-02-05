@@ -13,7 +13,7 @@ struct Crafting
 };
 
 extern Crafting Cooking;
-extern Crafting Alchemy;
+extern Crafting Scholar;
 
 }
 

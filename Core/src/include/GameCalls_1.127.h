@@ -17,6 +17,10 @@ inline long long int (*GetGameTicks)() = (long long int (*)())0x00731222;
 // Opcode type (Call, Jmp, Mov), legitimate function name, location.
 inline void * Call_GetGameTicks_GameStart              = (void *)0x004434E6;
 
+// TODO(dstaniak) : Make one , single place for whole memory map! Split memory map logically!
+// Crafting table start. It has 20 (0x14) crafting entries, 408 bytes each.
+inline void * CraftingInfo = (void *)0xF7F910;
+
 }
 
 #endif // GONDWANA_CORE_GAMECALLS_1_127_H

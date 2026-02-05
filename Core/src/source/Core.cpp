@@ -1,6 +1,8 @@
 #include "Core.h"
 #include "Util/Process.h"
 #include "GameCalls.h"
+#include "Crafting.h"
+#include "GameConsts.h"
 
 namespace Gondwana::Core
 {
@@ -26,7 +28,14 @@ Core::~Core()
 
 void Core::OnGameStarted()
 {
-	MessageBoxA(nullptr, "Game started.", "Gondwana", MB_OK | MB_ICONINFORMATION);
+	void * cookingAddress = (void*)(std::ptrdiff_t(GameCalls::CraftingInfo) + sizeof(GameData::Crafting::Crafting) * static_cast<size_t>(GameData::CraftingSkill::CookingCrafting));
+	void * scholarAddress = (void*)(std::ptrdiff_t(GameCalls::CraftingInfo) + sizeof(GameData::Crafting::Scholar ) * static_cast<size_t>(GameData::CraftingSkill::ScholarCrafting));
+
+	auto result = m_Process->WriteBytes(cookingAddress, &GameData::Crafting::Cooking, sizeof(GameData::Crafting::Crafting));
+	result = result && m_Process->WriteBytes(scholarAddress, &GameData::Crafting::Scholar, sizeof(GameData::Crafting::Scholar ));
+
+	if (!result)
+		MessageBoxA(nullptr, "Could not apply crafting patch!", "Gondwana", MB_OK | MB_ICONERROR);
 }
 
 }

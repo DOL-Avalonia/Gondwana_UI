@@ -34,7 +34,7 @@ Crafting Cooking
     }
 };
 
-Crafting Alchemy 
+Crafting Scholar 
 {
 	.StringId = 0,
 	.CraftId = 17,

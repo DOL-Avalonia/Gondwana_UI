@@ -103,6 +103,28 @@ enum class CharacterClass : unsigned char
     PuppetMaster = 67
 };
 
+enum class CraftingSkill 
+{
+    NoCrafting = 0,
+    WeaponCrafting = 1,
+    ArmorCrafting = 2,
+    SiegeCrafting = 3,
+    Alchemy = 4,
+    MetalWorking = 6,
+    LeatherCrafting = 7,
+    ClothWorking = 8,
+    GemCutting = 9,
+    HerbalCrafting = 10,
+    Tailoring = 11,
+    Fletching = 12,
+    SpellCrafting = 13,
+    WoodWorking = 14,
+    BasicCrafting = 15,
+    BountyCrafting = 16,
+    CookingCrafting = 17,
+    ScholarCrafting = 18
+};
+
 extern const std::map<CharacterClass, std::string> CharacterClassNames;
 
 } // Gondwana::Core
