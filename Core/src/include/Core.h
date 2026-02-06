@@ -1,9 +1,10 @@
 #ifndef GONDWANA_CORE_CORE_H
 #define GONDWANA_CORE_CORE_H
 
-#include "Util/Process.h"
 #include "Hooks.h"
 #include <memory>
+
+namespace Gondwana::Util::System { class Process; }
 
 namespace Gondwana::Core
 {
@@ -12,14 +13,13 @@ class Core
 {
 
 public:
-	Core();
-	~Core();
+	explicit Core(Util::System::Process * process);
 
+	void OnCraftingLoaded();
 	void OnGameStarted();
 
 private:
-	std::unique_ptr<Util::System::Process> m_Process;
-	Hooks::Hook m_GameStartHook;
+	Util::System::Process * m_Process;
 };
 
 extern std::unique_ptr<Gondwana::Core::Core> s_Core;

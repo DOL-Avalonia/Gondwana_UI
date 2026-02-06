@@ -8,7 +8,7 @@ Crafting Cooking
 {
 	.StringId = 0,
 	.CraftId = 16,
-	.IconId = 1556,
+	.IconId = 2885,
 	.CraftingData = 
 	{
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -38,7 +38,7 @@ Crafting Scholar
 {
 	.StringId = 0,
 	.CraftId = 17,
-	.IconId = 1525,
+	.IconId = 2878,
 	.CraftingData = 
 	{
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 

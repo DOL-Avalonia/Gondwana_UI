@@ -9,6 +9,33 @@
 namespace Gondwana::Core::Hooks
 {
 
+std::vector<Hook> Hooks = 
+{
+	{ &Hooks::GameStart,      GameCalls::Call_GetGameTicks_GameStart, Hooks::Hook::Opcode::CALL },
+	{ &Hooks::CraftingLoaded, GameCalls::Call_LoadCrafting_1,         Hooks::Hook::Opcode::CALL },
+	{ &Hooks::CraftingLoaded, GameCalls::Call_LoadCrafting_2,         Hooks::Hook::Opcode::CALL },
+};
+
+bool InstallHooks(Util::System::Process & process)
+{
+	bool result = true;
+	for (auto & hook : Hooks)
+	{
+		result = result && hook.Apply(process);
+	}
+	return result;
+}
+
+bool RemoveHooks(Util::System::Process & process)
+{
+	bool result = true;
+	for (auto& hook : Hooks)
+	{
+		result = result && hook.Undo(process);
+	}
+	return result;
+}
+
 Hook::Hook(void * hookFunction, void * hookingAddress, Opcode opcode) :
 	m_HookingAddress {hookingAddress},
 	m_Opcode {opcode}
@@ -46,6 +73,13 @@ long long int GameStart()
 unsigned short WriteReceviedPacket(unsigned short i)
 {
 	return ntohs(i);
+}
+
+int CraftingLoaded(int a)
+{
+	int result = Gondwana::Core::GameCalls::LoadCrafting(a);
+	s_Core->OnCraftingLoaded();
+	return result;
 }
 
 }
